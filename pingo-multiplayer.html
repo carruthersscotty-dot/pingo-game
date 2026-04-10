@@ -299,6 +299,66 @@
             letter-spacing: 1px;
         }
 
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .help-modal.active {
+            display: flex;
+        }
+
+        .help-content {
+            background: white;
+            color: #003087;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            margin: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .help-content h2 {
+            color: #003087;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .help-content h3 {
+            color: #FFD700;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .help-content p, .help-content li {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .help-content ul {
+            margin-left: 20px;
+        }
+
+        .btn-help {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-help:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             h1 {
@@ -350,6 +410,7 @@
     <div class="controls">
         <button class="btn btn-shuffle" onclick="shuffleBoard()">🔀 Shuffle My Board</button>
         <button class="btn btn-reset" onclick="resetBoard()">↺ Reset Marks</button>
+        <button class="btn btn-help" onclick="showHelp()">❓ HOW TO PLAY</button>
         <button class="btn btn-back" onclick="leaveSession()">← Leave Session</button>
     </div>
 
@@ -370,6 +431,49 @@
             <p id="winnerText">Congratulations! You won!</p>
             <button class="btn btn-shuffle" onclick="playAgain()">Play Again</button>
             <button class="btn btn-back" onclick="leaveSession()">Leave Session</button>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="help-modal">
+        <div class="help-content">
+            <h2>📖 HOW TO PLAY PINGO</h2>
+
+            <h3>🎯 OBJECTIVE</h3>
+            <p>Be the first player to complete <strong>3 complete rows</strong> (horizontal, vertical, or diagonal) to win PINGO!</p>
+
+            <h3>🎮 GAMEPLAY</h3>
+            <ul>
+                <li><strong>Click images</strong> on your board to mark them with a ✓</li>
+                <li>Each player has a <strong>unique shuffled board</strong></li>
+                <li>All players share the <strong>same pool of marked images</strong></li>
+                <li>When you mark an image, it syncs to all players in real-time</li>
+            </ul>
+
+            <h3>🏆 WINNING</h3>
+            <p>Complete 3 full rows from any combination of:</p>
+            <ul>
+                <li>5 Horizontal rows</li>
+                <li>5 Vertical rows</li>
+                <li>2 Diagonal rows</li>
+            </ul>
+            <p>When someone wins, <strong>everyone</strong> sees the PINGO celebration!</p>
+
+            <h3>🔀 CONTROLS</h3>
+            <ul>
+                <li><strong>Shuffle My Board:</strong> Rearrange your images (marks stay synced)</li>
+                <li><strong>Reset Marks:</strong> Clear ALL marks for everyone in the session</li>
+                <li><strong>Leave Session:</strong> Return to main menu</li>
+            </ul>
+
+            <h3>💡 TIPS</h3>
+            <ul>
+                <li>Share your session code with friends to play together</li>
+                <li>Watch the "Players online" count to see who's joined</li>
+                <li>The center square has a golden border - special spot!</li>
+            </ul>
+
+            <button class="btn btn-shuffle" onclick="closeHelp()" style="margin-top: 20px; width: 100%;">Got It! 🎉</button>
         </div>
     </div>
 
@@ -798,6 +902,14 @@
                 await db.ref(`sessions/${sessionCode}/players/${userId}`).remove();
             }
             window.location.href = 'index.html';
+        }
+
+        function showHelp() {
+            document.getElementById('helpModal').classList.add('active');
+        }
+
+        function closeHelp() {
+            document.getElementById('helpModal').classList.remove('active');
         }
 
         window.addEventListener('DOMContentLoaded', init);
