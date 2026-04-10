@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test</title>
+    <style>
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background-color: #003087;
+            color: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #FFD700; }
+        .test-result {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        .warning { border-left: 5px solid #ffc107; }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background: #FFD700;
+            color: #003087;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #FFC700;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Connection Test</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="testWrite()">Test Write</button>
+    <button onclick="testRead()">Test Read</button>
+    <button onclick="clearTest()">Clear Test Data</button>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        let db;
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function testConnection() {
+            resultsDiv.innerHTML = '<h2>Running Tests...</h2>';
+            
+            try {
+                // Check if Firebase is loaded
+                if (typeof firebase === 'undefined') {
+                    addResult('❌ <strong>Firebase SDK not loaded</strong><br>Check internet connection', 'error');
+                    return;
+                }
+                addResult('✅ <strong>Firebase SDK loaded</strong>', 'success');
+
+                // Check if initialized
+                try {
+                    db = firebase.database();
+                    addResult('✅ <strong>Firebase initialized</strong>', 'success');
+                } catch (e) {
+                    addResult(`❌ <strong>Firebase init failed:</strong><br><pre>${e.message}</pre>`, 'error');
+                    return;
+                }
+
+                // Check config
+                const app = firebase.app();
+                const config = app.options;
+                
+                let configHtml = '<strong>Current Configuration:</strong><br><pre>';
+                configHtml += `apiKey: ${config.apiKey?.substring(0, 10)}... ${config.apiKey !== 'YOUR_API_KEY' ? '✅' : '❌ PLACEHOLDER'}\n`;
+                configHtml += `authDomain: ${config.authDomain} ${config.authDomain !== 'YOUR_PROJECT_ID.firebaseapp.com' ? '✅' : '❌ PLACEHOLDER'}\n`;
+                configHtml += `databaseURL: ${config.databaseURL} ${config.databaseURL?.includes('firebaseio.com') ? '✅' : '❌'}\n`;
+                configHtml += `projectId: ${config.projectId} ${config.projectId !== 'YOUR_PROJECT_ID' ? '✅' : '❌ PLACEHOLDER'}\n`;
+                configHtml += '</pre>';
+                
+                const hasPlaceholders = config.apiKey === 'YOUR_API_KEY' || 
+                                       config.projectId === 'YOUR_PROJECT_ID' ||
+                                       config.authDomain === 'YOUR_PROJECT_ID.firebaseapp.com';
+                
+                addResult(configHtml, hasPlaceholders ? 'warning' : 'success');
+
+                if (hasPlaceholders) {
+                    addResult(`
+                        ⚠️ <strong>Placeholder values detected!</strong><br>
+                        Please update firebase-config.js with real values from:<br>
+                        <a href="https://console.firebase.google.com" target="_blank" style="color:#FFD700">Firebase Console → Project Settings → General → Your apps</a>
+                    `, 'warning');
+                }
+
+            } catch (error) {
+                addResult(`❌ <strong>Test failed:</strong><br><pre>${error.message}\n\n${error.stack}</pre>`, 'error');
+            }
+        }
+
+        async function testWrite() {
+            try {
+                if (!db) db = firebase.database();
+                
+                addResult('📝 Attempting to write test data...', 'warning');
+                
+                const testRef = db.ref('test_connection');
+                await testRef.set({
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    message: 'Test write successful!'
+                });
+                
+                addResult('✅ <strong>Write test PASSED</strong><br>Data written to /test_connection', 'success');
+                
+            } catch (error) {
+                addResult(`❌ <strong>Write test FAILED:</strong><br><pre>${error.message}</pre>`, 'error');
+                
+                if (error.code === 'PERMISSION_DENIED') {
+                    addResult(`
+                        🔒 <strong>Permission Denied</strong><br>
+                        Your Firebase Realtime Database rules are blocking writes.<br><br>
+                        <strong>Fix:</strong><br>
+                        1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:#FFD700">Firebase Console</a><br>
+                        2. Select your project<br>
+                        3. Go to: Build → Realtime Database → Rules<br>
+                        4. Replace with:<br>
+                        <pre>{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}</pre>
+                        5. Click "Publish"
+                    `, 'error');
+                }
+            }
+        }
+
+        async function testRead() {
+            try {
+                if (!db) db = firebase.database();
+                
+                addResult('📖 Attempting to read test data...', 'warning');
+                
+                const snapshot = await db.ref('test_connection').once('value');
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    addResult(`✅ <strong>Read test PASSED</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`, 'success');
+                } else {
+                    addResult('⚠️ <strong>No data found</strong><br>Run "Test Write" first', 'warning');
+                }
+                
+            } catch (error) {
+                addResult(`❌ <strong>Read test FAILED:</strong><br><pre>${error.message}</pre>`, 'error');
+            }
+        }
+
+        async function clearTest() {
+            try {
+                if (!db) db = firebase.database();
+                await db.ref('test_connection').remove();
+                addResult('🗑️ Test data cleared', 'success');
+            } catch (error) {
+                addResult(`❌ Clear failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run connection test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testConnection, 500);
+        });
+    </script>
+</body>
+</html>

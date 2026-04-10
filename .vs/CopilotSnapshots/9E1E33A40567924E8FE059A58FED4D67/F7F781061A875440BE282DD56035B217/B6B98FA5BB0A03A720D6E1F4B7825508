@@ -1,0 +1,17 @@
+﻿// Firebase configuration for PINGO multiplayer
+// Using Firebase Compat SDK (v9+ compat mode)
+const firebaseConfig = {
+  apiKey: "AIzaSyA1IP6mlOWzMgrbgZmdCpHjIZHZNKIKr2w",
+  authDomain: "pingo-eb6e3.firebaseapp.com",
+  databaseURL: "https://pingo-eb6e3-default-rtdb.firebaseio.com",
+  projectId: "pingo-eb6e3",
+  storageBucket: "pingo-eb6e3.firebasestorage.app",
+  messagingSenderId: "674386657049",
+  appId: "1:674386657049:web:b45db461c9ad1d4c5dcf88",
+  measurementId: "G-TFHYDBY1W1"
+};
+
+// Initialize Firebase (compat mode - no import needed, firebase is global)
+firebase.initializeApp(firebaseConfig);
+
+console.log('✅ Firebase initialized successfully');

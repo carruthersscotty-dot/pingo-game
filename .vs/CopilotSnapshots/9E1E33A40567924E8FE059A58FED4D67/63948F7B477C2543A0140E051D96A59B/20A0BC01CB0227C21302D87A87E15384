@@ -1,0 +1,193 @@
+﻿<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PINGO - Menu</title>
+<style>
+body { font-family: 'Arial Black', sans-serif; text-align: center; margin: 0; padding: 0; min-height: 100vh; background-color: #003087; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
+.sub-title { font-size: 1.4rem; color: #FFD700; font-weight: bold; letter-spacing: 2px; margin: 10px 0 20px 0; }
+
+/* HET GROTE BEWEGENDE LOGO - VERBETERDE VERSIE */
+.logo-wrapper { 
+  font-size: 100px; 
+  margin: 40px 0; 
+  height: 1.4em; 
+  display: flex; 
+  align-items: center; 
+}
+
+.logo-container { 
+  display: flex; 
+  align-items: center; 
+  position: relative; 
+  animation: hoofdDraai 1.8s ease-out forwards; 
+}
+
+.outline-letter { 
+  color: transparent; 
+  -webkit-text-stroke: 0.015em #ffffff; 
+  position: relative; 
+  z-index: 10; 
+}
+
+.g { margin-right: -0.32em; }
+.zes { margin-left: -0.32em; }
+
+.off-sectie { 
+  position: relative; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 0.7em; 
+}
+
+.o { 
+  font-size: 0.65em; 
+  position: relative; 
+  top: 0.04em; 
+  z-index: 5; /* O staat in het midden */
+}
+
+.f2 { 
+  position: absolute; 
+  left: 50%;
+  top: 50%;
+  color: transparent; 
+  -webkit-text-stroke: 1px #ffffff; 
+  font-size: 0.53em; 
+  font-weight: 200; 
+  font-family: Arial, sans-serif; 
+  z-index: 11;
+  opacity: 0; /* Begint onzichtbaar, dus je ziet hem niet meedraaien */
+  
+  /* Startpositie: Hoog bovenin */
+  transform: translate(-50%, -10em) scaleX(1.5) scaleY(4.5);
+  
+  /* De animatie: start na 1.8s (als het draaien klaar is) */
+  animation: fInval 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2) 1.8s forwards; 
+}
+
+@keyframes hoofdDraai { 
+  0% { transform: rotate(-180deg) scale(0.2); opacity: 0; } 
+  70% { transform: rotate(10deg) scale(1.05); opacity: 1; } 
+  100% { transform: rotate(0deg) scale(1); opacity: 1; } 
+}
+
+@keyframes fInval { 
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10em) scaleX(1.5) scaleY(4.5);
+  }
+  1% {
+    opacity: 1; /* Wordt pas hier zichtbaar */
+  }
+  100% { 
+    transform: translate(-50%, -50%) scaleX(1.5) scaleY(4.5); 
+    opacity: 1; 
+  } 
+}
+
+/* DE SELECTIE BALK ONDERAAN */
+.bottom-section { width: 100%; padding: 30px 0; margin-top: 10px; }
+select { padding: 15px 25px; font-size: 1.4rem; width: 90%; max-width: 400px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-family: 'Arial Black', sans-serif; background: white; color: black; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; }
+.footer { font-size: 0.9rem; margin-top: 30px; color: #FFD700; opacity: 0.7; letter-spacing: 1px; }
+</style>
+
+</head>
+<body>
+
+<h1>PINGO</h1>
+<div class="sub-title">THE PICTURE BINGO</div>
+
+<div class="logo-wrapper">
+  <div class="logo-container">
+    <span class="outline-letter g">G</span>
+    <div class="off-sectie">
+      <span class="outline-letter o">O</span>
+      <span class="f2">f</span>
+    </div>
+    <span class="outline-letter zes">6</span>
+  </div>
+</div>
+
+<div class="bottom-section">
+<select id="setSelector" onchange="gaNaarKaart()">
+<option value="" disabled selected>Loading games...</option>
+</select>
+</div>
+
+<div class="footer">BY GROUP OF SIX</div>
+
+<script>
+// List of all possible game folders to check
+const allGames = [
+    'Toronto-1', 'Toronto-2', 'Toronto-Zoo',
+    'General-1', 'General-2', 'General-3', 'General-4', 'General-5',
+    'Halifax', 'Nova-Scotia', 'Cabot-Trail',
+    'Vancouver', 'Netherlands', 'Amsterdam', 'Schiphol',
+    'Groningen', 'Leuven', 'cars', 'Vienna',
+    'Edinburgh', 'Valencia', 'Malaga', 'Road-trip-1'
+];
+
+// Check if a game folder exists by trying to load an image
+async function checkGameExists(gameName) {
+    return new Promise((resolve) => {
+        const img = new Image();
+
+        // Try lowercase .jpg first
+        img.onload = () => resolve(true);
+        img.onerror = () => {
+            // Try uppercase .JPG
+            const img2 = new Image();
+            img2.onload = () => resolve(true);
+            img2.onerror = () => resolve(false);
+            img2.src = `${gameName}/1.JPG`;
+        };
+
+        img.src = `${gameName}/1.jpg`;
+    });
+}
+
+// Populate dropdown with available games
+async function populateGameList() {
+    const selector = document.getElementById('setSelector');
+    const availableGames = [];
+
+    // Check each game folder
+    for (const game of allGames) {
+        const exists = await checkGameExists(game);
+        if (exists) {
+            availableGames.push(game);
+        }
+    }
+
+    // Clear loading option
+    selector.innerHTML = '<option value="" disabled selected>Choose your card!</option>';
+
+    // Add available games to dropdown
+    if (availableGames.length > 0) {
+        availableGames.forEach(game => {
+            const option = document.createElement('option');
+            option.value = game;
+            option.textContent = game;
+            selector.appendChild(option);
+        });
+    } else {
+        selector.innerHTML = '<option value="" disabled selected>No games found - add image folders!</option>';
+    }
+}
+
+function gaNaarKaart() {
+    const keuze = document.getElementById('setSelector').value;
+    if(keuze) {
+        // Dit stuurt de gebruiker naar gesplitste.html met de juiste stad als parameter
+        window.location.href = 'gesplitste.html?city=' + keuze;
+    }
+}
+
+// Load available games when page loads
+window.addEventListener('DOMContentLoaded', populateGameList);
+</script>
+
+</body>
+</html>

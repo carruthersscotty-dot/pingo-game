@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PINGO - Play</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background-color: #003087;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .city-name {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Arial Black', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-shuffle {
+            background: #FFD700;
+            color: #003087;
+        }
+
+        .btn-shuffle:hover {
+            background: #FFC700;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            background: white;
+            color: #003087;
+        }
+
+        .btn-back:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .pingo-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .pingo-cell {
+            aspect-ratio: 1;
+            border: 4px solid white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            background: #f0f0f0;
+        }
+
+        .pingo-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pingo-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
+            border-color: #FFD700;
+        }
+
+        .pingo-cell.marked::after {
+            content: '✓';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 215, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #003087;
+            font-weight: bold;
+            animation: markAnimation 0.3s ease-out;
+        }
+
+        .pingo-cell.center {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes markAnimation {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .winner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner-modal.active {
+            display: flex;
+        }
+
+        .winner-content {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            animation: popIn 0.5s ease-out;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
+        }
+
+        .winner-content h2 {
+            font-size: 4rem;
+            color: #003087;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .winner-content p {
+            font-size: 1.5rem;
+            color: #003087;
+            margin-bottom: 30px;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #FFD700;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin: 50px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .city-name {
+                font-size: 1.3rem;
+            }
+
+            .pingo-board {
+                gap: 5px;
+                padding: 15px;
+            }
+
+            .pingo-cell {
+                border-width: 3px;
+            }
+
+            .pingo-cell.marked::after {
+                font-size: 2.5rem;
+            }
+
+            .winner-content {
+                padding: 30px;
+                margin: 20px;
+            }
+
+            .winner-content h2 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 PINGO 🎉</h1>
+        <div class="city-name" id="cityName">Loading...</div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-shuffle" onclick="shuffleBoard()">🔀 Shuffle</button>
+        <button class="btn btn-reset" onclick="resetBoard()">↺ Reset</button>
+        <button class="btn btn-back" onclick="goBack()">← Back to Menu</button>
+    </div>
+
+    <div id="loadingMessage" class="loading">Loading images...</div>
+
+    <div id="pingoBoard" class="pingo-board" style="display:none;">
+        <!-- 5x5 grid will be generated here -->
+    </div>
+
+    <div class="footer">BY GROUP OF SIX</div>
+
+    <!-- Winner Modal -->
+    <div id="winnerModal" class="winner-modal">
+        <div class="winner-content">
+            <h2>🎊 PINGO! 🎊</h2>
+            <p>Congratulations! You won!</p>
+            <button class="btn btn-shuffle" onclick="playAgain()">Play Again</button>
+            <button class="btn btn-back" onclick="goBack()">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        let cityName = '';
+        let images = [];
+        let board = [];
+        let markedCells = new Set();
+
+        // Get city from URL parameter
+        function getCityFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('city') || 'Schiphol';
+        }
+
+        // Initialize the game
+        function init() {
+            cityName = getCityFromURL();
+            document.getElementById('cityName').textContent = cityName.toUpperCase();
+            loadImages();
+        }
+
+        // Load images from the folder
+        function loadImages() {
+            const imageNumbers = Array.from({length: 24}, (_, i) => i + 1);
+            images = imageNumbers.map(num => `${cityName}/${num}.jpg`);
+            images.push(`${cityName}/gimme.jpg`); // Add the special center image
+
+            // Test if images load, then create board
+            testImagesAndCreateBoard();
+        }
+
+        function testImagesAndCreateBoard() {
+            const testImg = new Image();
+            testImg.onload = () => {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('pingoBoard').style.display = 'grid';
+                createBoard();
+            };
+            testImg.onerror = () => {
+                document.getElementById('loadingMessage').innerHTML = 
+                    `❌ Could not load images for "${cityName}"<br>Please check that the folder exists with images 1-24.jpg and gimme.jpg`;
+            };
+            testImg.src = images[0];
+        }
+
+        // Create the initial board
+        function createBoard() {
+            // Shuffle all images except gimme.jpg (center)
+            const regularImages = images.slice(0, 24);
+            const shuffled = shuffleArray(regularImages);
+            
+            // Place gimme.jpg in center (position 12)
+            board = [
+                ...shuffled.slice(0, 12),
+                images[24], // gimme.jpg in center
+                ...shuffled.slice(12)
+            ];
+
+            renderBoard();
+        }
+
+        // Shuffle the board
+        function shuffleBoard() {
+            markedCells.clear();
+            createBoard();
+        }
+
+        // Reset marks but keep current board
+        function resetBoard() {
+            markedCells.clear();
+            renderBoard();
+        }
+
+        // Shuffle array helper
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Render the board
+        function renderBoard() {
+            const boardEl = document.getElementById('pingoBoard');
+            boardEl.innerHTML = '';
+
+            board.forEach((imagePath, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'pingo-cell';
+                if (index === 12) {
+                    cell.classList.add('center'); // Highlight center cell
+                }
+                
+                const img = document.createElement('img');
+                img.src = imagePath;
+                img.alt = `Cell ${index + 1}`;
+                img.onerror = () => {
+                    img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23ddd"/><text x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999">?</text></svg>';
+                };
+                
+                cell.appendChild(img);
+                cell.addEventListener('click', () => toggleCell(index));
+                
+                if (markedCells.has(index)) {
+                    cell.classList.add('marked');
+                }
+                
+                boardEl.appendChild(cell);
+            });
+        }
+
+        // Toggle cell marked state
+        function toggleCell(index) {
+            if (markedCells.has(index)) {
+                markedCells.delete(index);
+            } else {
+                markedCells.add(index);
+            }
+            renderBoard();
+            checkForWin();
+        }
+
+        // Check for winning patterns
+        function checkForWin() {
+            const marked = Array.from(markedCells);
+            
+            const winPatterns = [
+                // Rows
+                [0, 1, 2, 3, 4],
+                [5, 6, 7, 8, 9],
+                [10, 11, 12, 13, 14],
+                [15, 16, 17, 18, 19],
+                [20, 21, 22, 23, 24],
+                // Columns
+                [0, 5, 10, 15, 20],
+                [1, 6, 11, 16, 21],
+                [2, 7, 12, 17, 22],
+                [3, 8, 13, 18, 23],
+                [4, 9, 14, 19, 24],
+                // Diagonals
+                [0, 6, 12, 18, 24],
+                [4, 8, 12, 16, 20]
+            ];
+
+            for (const pattern of winPatterns) {
+                if (pattern.every(index => marked.includes(index))) {
+                    showWinner();
+                    return;
+                }
+            }
+        }
+
+        // Show winner modal
+        function showWinner() {
+            document.getElementById('winnerModal').classList.add('active');
+        }
+
+        // Play again
+        function playAgain() {
+            document.getElementById('winnerModal').classList.remove('active');
+            shuffleBoard();
+        }
+
+        // Go back to menu
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

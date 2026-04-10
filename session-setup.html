@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PINGO - Session Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background-color: #003087;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-name {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .mode-selection {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .mode-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 30px;
+            background: white;
+            color: #003087;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .mode-card.selected {
+            background: #FFD700;
+            transform: scale(1.05);
+        }
+
+        .mode-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .mode-card p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .session-options {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .session-options.active {
+            display: block;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #FFD700;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: bold;
+            background: white;
+            color: #003087;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Arial Black', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+        }
+
+        .btn-primary {
+            background: #FFD700;
+            color: #003087;
+        }
+
+        .btn-primary:hover {
+            background: #FFC700;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #003087;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            margin: 30px 0;
+            color: #FFD700;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .mode-selection {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 PINGO 🎉</h1>
+        <div class="game-name" id="gameName"></div>
+        <p style="color: #FFD700; margin-bottom: 30px; font-size: 1.1rem;">Win by completing 3 complete rows!</p>
+
+        <div id="sessionOptions" class="session-options active">
+            <div class="input-group">
+                <label>Create New Session</label>
+                <input type="text" id="sessionName" placeholder="Enter session name">
+                <button class="btn btn-primary" onclick="createSession()">Create Session</button>
+            </div>
+
+            <div class="divider">OR</div>
+
+            <div class="input-group">
+                <label>Join Existing Session</label>
+                <input type="text" id="sessionCode" placeholder="Enter session code">
+                <button class="btn btn-primary" onclick="joinSession()">Join Session</button>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" onclick="goBack()">← Back to Menu</button>
+    </div>
+
+    <script>
+        let selectedMode = null;
+        let cityName = '';
+
+        function getCityFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('city') || 'Schiphol';
+        }
+
+        function init() {
+            cityName = getCityFromURL();
+            document.getElementById('gameName').textContent = cityName.toUpperCase();
+        }
+
+        // Removed solo mode - always multiplayer now
+
+        function generateSessionCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function createSession() {
+            const sessionName = document.getElementById('sessionName').value.trim();
+            
+            if (!sessionName) {
+                alert('Please enter a session name');
+                return;
+            }
+
+            const sessionCode = generateSessionCode();
+            
+            // Redirect to multiplayer game with session info
+            window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${sessionCode}&name=${encodeURIComponent(sessionName)}&mode=create`;
+        }
+
+        function joinSession() {
+            const sessionCode = document.getElementById('sessionCode').value.trim().toUpperCase();
+            
+            if (!sessionCode) {
+                alert('Please enter a session code');
+                return;
+            }
+
+            // Redirect to multiplayer game with session code
+            window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${sessionCode}&mode=join`;
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
