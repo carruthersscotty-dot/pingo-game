@@ -397,6 +397,27 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
+        .image-description {
+            background: rgba(0, 48, 135, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .image-description h3 {
+            color: #003087;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .image-description p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
         .preview-buttons {
             display: flex;
             gap: 15px;
@@ -549,6 +570,10 @@
     <div id="imagePreviewModal" class="image-preview-modal">
         <div class="image-preview-content">
             <img id="previewImage" src="" alt="Preview">
+            <div class="image-description">
+                <h3>Did you find this image?</h3>
+                <p id="imageDescription">Look carefully at this image. If this matches what you're looking for, click "Found It!" to mark it on your board.</p>
+            </div>
             <div class="preview-buttons">
                 <button class="btn btn-found" onclick="confirmMark()">✓ Found It!</button>
                 <button class="btn btn-cancel" onclick="closeImagePreview()">✗ Cancel</button>
