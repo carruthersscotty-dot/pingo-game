@@ -408,7 +408,7 @@
     </div>
 
     <div class="controls">
-        <button class="btn btn-shuffle" onclick="shuffleBoard()">🔀 Shuffle My Board</button>
+        <button id="shuffleBtn" class="btn btn-shuffle" onclick="shuffleBoard()">🔀 Shuffle My Board</button>
         <button class="btn btn-reset" onclick="resetBoard()">↺ Reset Marks</button>
         <button class="btn btn-help" onclick="showHelp()">❓ HOW TO PLAY</button>
         <button class="btn btn-back" onclick="leaveSession()">← Leave Session</button>
@@ -705,7 +705,8 @@
             await db.ref(`sessions/${sessionCode}/markedImages`).remove();
             markedCells.clear();
             renderBoard();
-            addMessage('All marks reset for everyone!', 'info');
+            // Shuffle button will automatically reappear when markedImages listener detects empty state
+            addMessage('All marks reset for everyone! You can shuffle again.', 'info');
         }
 
         function shuffleArray(array) {
@@ -880,6 +881,14 @@
             sessionRef.child('markedImages').on('value', (snapshot) => {
                 const markedImages = snapshot.val() || {};
                 const markedPaths = Object.values(markedImages).map(img => img.path);
+
+                // Hide shuffle button if any marks have been made
+                const shuffleBtn = document.getElementById('shuffleBtn');
+                if (Object.keys(markedImages).length > 0) {
+                    shuffleBtn.style.display = 'none';
+                } else {
+                    shuffleBtn.style.display = 'block';
+                }
 
                 // Update local markedCells based on which images are marked
                 markedCells.clear();
