@@ -597,6 +597,7 @@
         let board = [];
         let markedCells = new Set();
         let calledImages = new Set();
+        let sessionListeners = null; // Store listener references for cleanup
 
         function getURLParams() {
             const params = new URLSearchParams(window.location.search);
@@ -976,9 +977,26 @@
         }
 
         function listenToSession() {
+            // Clean up old listeners first
+            if (sessionListeners) {
+                console.log('Cleaning up old session listeners');
+                const oldRef = db.ref(`sessions/${sessionListeners.code}`);
+                oldRef.child('players').off('value', sessionListeners.playersListener);
+                oldRef.child('winners').off('child_added', sessionListeners.winnersListener);
+                oldRef.child('markedImages').off('value', sessionListeners.markedListener);
+            }
+
             const sessionRef = db.ref(`sessions/${sessionCode}`);
 
-            sessionRef.child('players').on('value', (snapshot) => {
+            // Store listener references for cleanup later
+            sessionListeners = {
+                code: sessionCode,
+                playersListener: null,
+                winnersListener: null,
+                markedListener: null
+            };
+
+            sessionListeners.playersListener = (snapshot) => {
                 const players = snapshot.val() || {};
                 const onlinePlayers = Object.values(players).filter(p => p.online);
                 const onlineCount = onlinePlayers.length;
@@ -986,9 +1004,10 @@
                 // Display player names
                 const playerNames = onlinePlayers.map(p => p.name || 'Anonymous').join(', ');
                 document.getElementById('playersCount').textContent = `Players online (${onlineCount}): ${playerNames}`;
-            });
+            };
+            sessionRef.child('players').on('value', sessionListeners.playersListener);
 
-            sessionRef.child('winners').on('child_added', (snapshot) => {
+            sessionListeners.winnersListener = (snapshot) => {
                 const winner = snapshot.val();
                 const winnerName = winner.playerName || 'Someone';
 
@@ -1001,10 +1020,11 @@
                     showWinner(`🎊 PINGO! 🎊\n${winnerName} won!`);
                     addMessage(`🎊 ${winnerName} got PINGO! 🎊`, 'winner');
                 }
-            });
+            };
+            sessionRef.child('winners').on('child_added', sessionListeners.winnersListener);
 
             // Listen for marked images from all players
-            sessionRef.child('markedImages').on('value', (snapshot) => {
+            sessionListeners.markedListener = (snapshot) => {
                 const markedImages = snapshot.val() || {};
                 const markedPaths = Object.values(markedImages).map(img => img.path);
 
@@ -1028,7 +1048,8 @@
                 });
 
                 renderBoard();
-            });
+            };
+            sessionRef.child('markedImages').on('value', sessionListeners.markedListener);
 
             window.addEventListener('beforeunload', () => {
                 db.ref(`sessions/${sessionCode}/players/${userId}/online`).set(false);
@@ -1048,9 +1069,21 @@
         }
 
         async function leaveSession() {
+            // Clean up Firebase listeners
+            if (sessionListeners && sessionCode) {
+                console.log('Cleaning up listeners before leaving');
+                const sessionRef = db.ref(`sessions/${sessionCode}`);
+                sessionRef.child('players').off('value', sessionListeners.playersListener);
+                sessionRef.child('winners').off('child_added', sessionListeners.winnersListener);
+                sessionRef.child('markedImages').off('value', sessionListeners.markedListener);
+                sessionListeners = null;
+            }
+
+            // Remove player from session
             if (sessionCode && userId) {
                 await db.ref(`sessions/${sessionCode}/players/${userId}`).remove();
             }
+
             window.location.href = 'index.html';
         }
 
