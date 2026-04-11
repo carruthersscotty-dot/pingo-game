@@ -371,6 +371,7 @@
             z-index: 3000;
             align-items: center;
             justify-content: center;
+            padding: 10px;
         }
 
         .image-preview-modal.active {
@@ -387,14 +388,16 @@
             flex-direction: column;
             align-items: center;
             animation: popIn 0.3s ease-out;
+            overflow-y: auto;
         }
 
         .image-preview-content img {
             max-width: 100%;
-            max-height: 60vh;
+            max-height: 50vh;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            object-fit: contain;
         }
 
         .image-description {
@@ -477,6 +480,47 @@
 
             .winner-content h2 {
                 font-size: 2.5rem;
+            }
+
+            /* Image Preview Mobile Optimization */
+            .image-preview-content {
+                padding: 15px;
+                max-width: 95%;
+                max-height: 95vh;
+            }
+
+            .image-preview-content img {
+                max-height: 40vh;
+                margin-bottom: 10px;
+            }
+
+            .image-description {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .image-description h3 {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
+
+            .image-description p {
+                font-size: 0.9rem;
+            }
+
+            .btn-found, .btn-cancel {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            .preview-buttons {
+                width: 100%;
+                gap: 10px;
+            }
+
+            .preview-buttons .btn {
+                flex: 1;
+                min-width: 120px;
             }
         }
     </style>
