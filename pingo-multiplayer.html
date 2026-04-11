@@ -403,8 +403,8 @@
     </div>
 
     <div class="players-section">
-        <div class="players-count" id="playersCount">Players online: 0</div>
-        <div style="font-size: 0.9rem; opacity: 0.8;">Share the session code with friends to play together!</div>
+        <div class="players-count" id="playersCount">Players online (0): </div>
+        <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">Share the session code with friends to play together!</div>
     </div>
 
     <div class="controls">
@@ -488,6 +488,7 @@
         let sessionCode = '';
         let sessionName = '';
         let userId = '';
+        let playerName = '';
         let images = [];
         let board = [];
         let markedCells = new Set();
@@ -499,6 +500,7 @@
                 city: params.get('city') || 'Schiphol',
                 session: params.get('session'),
                 name: params.get('name'),
+                playerName: params.get('playerName') || 'Anonymous',
                 mode: params.get('mode')
             };
         }
@@ -547,9 +549,10 @@
             cityName = params.city;
             sessionCode = params.session;
             sessionName = params.name || 'Game Session';
+            playerName = params.playerName || 'Anonymous';
             userId = generateUserId();
 
-            console.log('Session params:', { cityName, sessionCode, sessionName, userId });
+            console.log('Session params:', { cityName, sessionCode, sessionName, playerName, userId });
 
             document.getElementById('sessionCode').textContent = sessionCode;
             document.getElementById('cityName').textContent = cityName.toUpperCase();
@@ -574,6 +577,7 @@
                     createdAt: firebase.database.ServerValue.TIMESTAMP,
                     players: {
                         [userId]: {
+                            name: playerName,
                             online: true,
                             joinedAt: firebase.database.ServerValue.TIMESTAMP
                         }
@@ -607,12 +611,13 @@
                 console.log('Joining session:', sessionName);
 
                 await db.ref(`sessions/${sessionCode}/players/${userId}`).set({
+                    name: playerName,
                     online: true,
                     joinedAt: firebase.database.ServerValue.TIMESTAMP
                 });
 
                 console.log('Successfully joined session!');
-                addMessage(`Joined session: ${sessionName}`, 'info');
+                addMessage(`${playerName} joined session: ${sessionName}`, 'info');
 
             } catch (error) {
                 console.error('Error joining session:', error);
@@ -819,13 +824,14 @@
             try {
                 const winRef = db.ref(`sessions/${sessionCode}/winners`).push({
                     userId: userId,
+                    playerName: playerName,
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
 
                 await winRef;
 
-                showWinner('🎊 You got PINGO! 🎊');
-                addMessage('🎊 You won with 3 complete rows!', 'winner');
+                showWinner(`🎊 ${playerName} got PINGO! 🎊`);
+                addMessage(`🎊 ${playerName} won with 3 complete rows!`, 'winner');
             } catch (error) {
                 console.error('Error announcing win:', error);
                 alert('Error announcing win: ' + error.message);
@@ -847,20 +853,26 @@
 
             sessionRef.child('players').on('value', (snapshot) => {
                 const players = snapshot.val() || {};
-                const onlineCount = Object.values(players).filter(p => p.online).length;
-                document.getElementById('playersCount').textContent = `Players online: ${onlineCount}`;
+                const onlinePlayers = Object.values(players).filter(p => p.online);
+                const onlineCount = onlinePlayers.length;
+
+                // Display player names
+                const playerNames = onlinePlayers.map(p => p.name || 'Anonymous').join(', ');
+                document.getElementById('playersCount').textContent = `Players online (${onlineCount}): ${playerNames}`;
             });
 
             sessionRef.child('winners').on('child_added', (snapshot) => {
                 const winner = snapshot.val();
+                const winnerName = winner.playerName || 'Someone';
+
                 if (winner.userId === userId) {
                     // You won - show your win modal
-                    showWinner('🎊 You got PINGO! 🎊');
-                    addMessage('🎊 You won with 3 complete rows!', 'winner');
+                    showWinner(`🎊 ${winnerName} got PINGO! 🎊`);
+                    addMessage(`🎊 ${winnerName} won with 3 complete rows!`, 'winner');
                 } else {
                     // Someone else won - show them the winner modal too
-                    showWinner('🎊 PINGO! 🎊\nAnother player won!');
-                    addMessage('🎊 Another player got PINGO! 🎊', 'winner');
+                    showWinner(`🎊 PINGO! 🎊\n${winnerName} won!`);
+                    addMessage(`🎊 ${winnerName} got PINGO! 🎊`, 'winner');
                 }
             });
 
