@@ -409,7 +409,7 @@
 
     <div class="controls">
         <button id="shuffleBtn" class="btn btn-shuffle" onclick="shuffleBoard()">🔀 Shuffle My Board</button>
-        <button class="btn btn-reset" onclick="resetBoard()">↺ Reset Marks</button>
+        <button id="resetBtn" class="btn btn-reset" onclick="resetBoard()">↺ Reset Marks</button>
         <button class="btn btn-help" onclick="showHelp()">❓ HOW TO PLAY</button>
         <button class="btn btn-back" onclick="leaveSession()">← Leave Session</button>
     </div>
@@ -448,6 +448,7 @@
                 <li>Each player has a <strong>unique shuffled board</strong></li>
                 <li>All players share the <strong>same pool of marked images</strong></li>
                 <li>When you mark an image, it syncs to all players in real-time</li>
+                <li><strong>Once anyone marks a tile, Shuffle and Reset buttons disappear - play to win or leave!</strong></li>
             </ul>
 
             <h3>🏆 WINNING</h3>
@@ -461,9 +462,9 @@
 
             <h3>🔀 CONTROLS</h3>
             <ul>
-                <li><strong>Shuffle My Board:</strong> Rearrange your images (marks stay synced)</li>
-                <li><strong>Reset Marks:</strong> Clear ALL marks for everyone in the session</li>
-                <li><strong>Leave Session:</strong> Return to main menu</li>
+                <li><strong>Shuffle My Board:</strong> Rearrange your images (only before game starts)</li>
+                <li><strong>Reset Marks:</strong> Clear ALL marks (only before game starts)</li>
+                <li><strong>Leave Session:</strong> Exit and return to main menu</li>
             </ul>
 
             <h3>💡 TIPS</h3>
@@ -705,8 +706,8 @@
             await db.ref(`sessions/${sessionCode}/markedImages`).remove();
             markedCells.clear();
             renderBoard();
-            // Shuffle button will automatically reappear when markedImages listener detects empty state
-            addMessage('All marks reset for everyone! You can shuffle again.', 'info');
+            // Shuffle and reset buttons will automatically reappear when markedImages listener detects empty state
+            addMessage('All marks reset! Ready to start fresh.', 'info');
         }
 
         function shuffleArray(array) {
@@ -882,12 +883,15 @@
                 const markedImages = snapshot.val() || {};
                 const markedPaths = Object.values(markedImages).map(img => img.path);
 
-                // Hide shuffle button if any marks have been made
+                // Hide shuffle and reset buttons if any marks have been made
                 const shuffleBtn = document.getElementById('shuffleBtn');
+                const resetBtn = document.getElementById('resetBtn');
                 if (Object.keys(markedImages).length > 0) {
                     shuffleBtn.style.display = 'none';
+                    resetBtn.style.display = 'none';
                 } else {
                     shuffleBtn.style.display = 'block';
+                    resetBtn.style.display = 'block';
                 }
 
                 // Update local markedCells based on which images are marked
