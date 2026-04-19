@@ -342,7 +342,7 @@ function createSessionCard(session) {
         <div class="session-city">${session.city}</div>
         <div class="session-players">${session.playerCount} player${session.playerCount !== 1 ? 's' : ''} online</div>
     `;
-    card.onclick = () => joinSession(session.name);
+    card.onclick = () => joinSession(session.name, session.city);
     return card;
 }
 
@@ -380,15 +380,15 @@ function createNewSession() {
 }
 
 // Join existing session
-function joinSession(sessionName) {
+function joinSession(sessionName, cityName) {
     const playerName = prompt(`Join "${sessionName}"\n\nEnter your name:`);
     if (!playerName || !playerName.trim()) return;
 
     const sessionCode = prompt('Enter session code:\n(You need the code from the session creator)');
     if (!sessionCode || !sessionCode.trim()) return;
 
-    // Redirect to game
-    window.location.href = `pingo-multiplayer.html?session=${sessionCode.trim().toUpperCase()}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
+    // Redirect to game WITH CITY PARAMETER
+    window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${sessionCode.trim().toUpperCase()}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
 }
 
 window.addEventListener('DOMContentLoaded', init);
