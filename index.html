@@ -342,7 +342,7 @@ function createSessionCard(session) {
         <div class="session-city">${session.city}</div>
         <div class="session-players">${session.playerCount} player${session.playerCount !== 1 ? 's' : ''} online</div>
     `;
-    card.onclick = () => joinSession(session.name, session.city);
+    card.onclick = () => joinSession(session.name, session.city, session.code);
     return card;
 }
 
@@ -379,16 +379,22 @@ function createNewSession() {
     window.location.href = `pingo-multiplayer.html?city=${selectedCity}&session=${sessionCode}&name=${encodeURIComponent(sessionName.trim())}&playerName=${encodeURIComponent(playerName.trim())}&mode=create`;
 }
 
-// Join existing session
-function joinSession(sessionName, cityName) {
+// Join existing session - REQUIRES VALID SESSION CODE
+function joinSession(sessionName, cityName, actualSessionCode) {
     const playerName = prompt(`Join "${sessionName}"\n\nEnter your name:`);
     if (!playerName || !playerName.trim()) return;
 
-    const sessionCode = prompt('Enter session code:\n(You need the code from the session creator)');
-    if (!sessionCode || !sessionCode.trim()) return;
+    const enteredCode = prompt('Enter session code:\n(You must have the code from the session creator)');
+    if (!enteredCode || !enteredCode.trim()) return;
 
-    // Redirect to game WITH CITY PARAMETER
-    window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${sessionCode.trim().toUpperCase()}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
+    // VALIDATE: Entered code must match the actual session code
+    if (enteredCode.trim().toUpperCase() !== actualSessionCode.toUpperCase()) {
+        alert('❌ Invalid session code!\n\nYou must enter the correct code to join this session.');
+        return;
+    }
+
+    // ✅ Code is valid - allow joining
+    window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${actualSessionCode.toUpperCase()}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
 }
 
 window.addEventListener('DOMContentLoaded', init);
