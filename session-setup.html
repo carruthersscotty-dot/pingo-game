@@ -154,6 +154,69 @@
             font-size: 1.2rem;
         }
 
+        .sessions-browser {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 30px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .sessions-browser h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .session-item {
+            background: white;
+            color: #003087;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .session-item:hover {
+            background: #FFD700;
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .session-item-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .session-item-code {
+            color: #003087;
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .session-item-details {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .no-sessions {
+            color: #FFD700;
+            opacity: 0.7;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .loading-sessions {
+            color: #FFD700;
+            padding: 20px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 30px 20px;
@@ -185,8 +248,18 @@
 
             <div class="divider">OR</div>
 
+            <!-- Active Sessions Browser -->
+            <div class="sessions-browser">
+                <h3>🎮 Active Sessions</h3>
+                <div id="sessionsList">
+                    <div class="loading-sessions">Loading sessions...</div>
+                </div>
+            </div>
+
+            <div class="divider">OR</div>
+
             <div class="input-group">
-                <label>Join Existing Session</label>
+                <label>Join with Code</label>
                 <input type="text" id="playerName2" placeholder="Your name">
                 <input type="text" id="sessionCode" placeholder="Session code">
                 <button class="btn btn-primary" onclick="joinSession()">Join Session</button>
@@ -196,9 +269,15 @@
         <button class="btn btn-secondary" onclick="goBack()">← Back to Menu</button>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
     <script>
         let selectedMode = null;
         let cityName = '';
+        let db;
 
         function getCityFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -208,6 +287,78 @@
         function init() {
             cityName = getCityFromURL();
             document.getElementById('gameName').textContent = cityName.toUpperCase();
+
+            // Initialize Firebase
+            try {
+                db = firebase.database();
+                console.log('✅ Firebase initialized');
+                loadActiveSessions();
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                document.getElementById('sessionsList').innerHTML = '<div class="no-sessions">Could not load sessions</div>';
+            }
+        }
+
+        function loadActiveSessions() {
+            const sessionsListEl = document.getElementById('sessionsList');
+
+            // Listen for active sessions for this city
+            db.ref('sessions').on('value', (snapshot) => {
+                const sessions = snapshot.val();
+                sessionsListEl.innerHTML = '';
+
+                if (!sessions) {
+                    sessionsListEl.innerHTML = '<div class="no-sessions">No active sessions. Create one!</div>';
+                    return;
+                }
+
+                // Filter sessions for this city
+                const citySessions = [];
+                Object.keys(sessions).forEach(code => {
+                    const session = sessions[code];
+                    if (session.city === cityName) {
+                        const onlinePlayers = session.players ? 
+                            Object.values(session.players).filter(p => p.online).length : 0;
+
+                        citySessions.push({
+                            code: code,
+                            name: session.name,
+                            playerCount: onlinePlayers,
+                            createdAt: session.createdAt
+                        });
+                    }
+                });
+
+                if (citySessions.length === 0) {
+                    sessionsListEl.innerHTML = '<div class="no-sessions">No active sessions for ' + cityName + '. Create one!</div>';
+                    return;
+                }
+
+                // Sort by most recent
+                citySessions.sort((a, b) => b.createdAt - a.createdAt);
+
+                // Display sessions
+                citySessions.forEach(session => {
+                    const sessionEl = document.createElement('div');
+                    sessionEl.className = 'session-item';
+                    sessionEl.onclick = () => selectSession(session.code, session.name);
+
+                    sessionEl.innerHTML = `
+                        <div class="session-item-name">${session.name}</div>
+                        <div class="session-item-code">Code: ${session.code}</div>
+                        <div class="session-item-details">${session.playerCount} player${session.playerCount !== 1 ? 's' : ''} online</div>
+                    `;
+
+                    sessionsListEl.appendChild(sessionEl);
+                });
+            });
+        }
+
+        function selectSession(code, name) {
+            const playerName = prompt(`Join "${name}"?\n\nEnter your name:`);
+            if (playerName && playerName.trim()) {
+                window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${code}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
+            }
         }
 
         // Removed solo mode - always multiplayer now
