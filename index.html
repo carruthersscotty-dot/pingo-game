@@ -550,8 +550,16 @@ function createNewSession() {
     // Generate session code
     const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    // Show code to creator
-    alert(`Session created!\n\nSession Code: ${sessionCode}\n\nShare this code with friends to invite them.`);
+    // Create shareable message
+    const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\nCode: ${sessionCode}\n\nGo to: ${window.location.origin}${window.location.pathname}`;
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(shareMessage).then(() => {
+        alert(`✅ Session created!\n\nSession Code: ${sessionCode}\n\n📋 Session details copied to clipboard!\nPaste and send to your friends to invite them.`);
+    }).catch(() => {
+        // Fallback if clipboard fails
+        alert(`Session created!\n\nSession Code: ${sessionCode}\nCity: ${selectedCity}\n\nShare this code with friends to invite them.`);
+    });
 
     // Redirect to game
     window.location.href = `pingo-multiplayer.html?city=${selectedCity}&session=${sessionCode}&name=${encodeURIComponent(sessionName.trim())}&playerName=${encodeURIComponent(playerName.trim())}&mode=create`;
