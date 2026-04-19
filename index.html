@@ -181,9 +181,120 @@ h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
   letter-spacing: 1px; 
 }
 
+/* Help Button */
+.help-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
+  z-index: 100;
+}
+
+.help-button:hover {
+  background: #45a049;
+  transform: scale(1.1);
+}
+
+/* Help Modal */
+.help-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.help-modal.active {
+  display: flex;
+}
+
+.help-content {
+  background: white;
+  color: #003087;
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 600px;
+  margin: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.help-content h2 {
+  color: #003087;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.help-content h3 {
+  color: #FFD700;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.help-content p, .help-content li {
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.help-content ul {
+  margin-left: 20px;
+}
+
+.help-content ol {
+  margin-left: 20px;
+}
+
+.close-help-btn {
+  width: 100%;
+  padding: 12px;
+  background: #FFD700;
+  color: #003087;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s;
+}
+
+.close-help-btn:hover {
+  background: #FFC700;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .sessions-grid {
     grid-template-columns: 1fr;
+  }
+
+  .help-button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .help-content {
+    padding: 25px;
+    margin: 10px;
   }
 }
 </style>
@@ -213,6 +324,73 @@ h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
 </div>
 
 <div class="footer">BY GROUP OF SIX</div>
+
+<!-- Floating Help Button -->
+<button class="help-button" onclick="showHelp()" title="How to Play">❓</button>
+
+<!-- Help Modal -->
+<div id="helpModal" class="help-modal">
+  <div class="help-content">
+    <h2>📖 HOW TO PLAY PINGO</h2>
+
+    <h3>🎯 WHAT IS PINGO?</h3>
+    <p>PINGO is Picture BINGO! Instead of numbers, you match <strong>photos</strong> on a 5×5 grid. Be the first to complete <strong>3 full rows</strong> to win!</p>
+
+    <h3>🚀 GETTING STARTED</h3>
+    <ol>
+      <li><strong>Create a Session:</strong> Click the "➕ Create New Session" card</li>
+      <li><strong>Choose a City/Theme:</strong> Select from available photo sets</li>
+      <li><strong>Share the Code:</strong> You'll get a 6-character code - send it to friends privately</li>
+      <li><strong>Start Playing:</strong> Once everyone joins, start marking photos!</li>
+    </ol>
+
+    <h3>🎮 GAMEPLAY BASICS</h3>
+    <ul>
+      <li>Each player gets a <strong>unique shuffled board</strong> with the same 24 photos</li>
+      <li>Click a photo to preview it, then click <strong>"Found It!"</strong> to mark</li>
+      <li>When you mark a photo, it syncs to <strong>all players instantly</strong></li>
+      <li>Get <strong>3 complete rows</strong> (any direction) to win PINGO!</li>
+    </ul>
+
+    <h3>🏆 WINNING CONDITIONS</h3>
+    <p>Complete any 3 rows from:</p>
+    <ul>
+      <li>5 Horizontal rows</li>
+      <li>5 Vertical rows</li>
+      <li>2 Diagonal rows</li>
+    </ul>
+
+    <h3>🔒 PRIVACY & SECURITY</h3>
+    <ul>
+      <li>Sessions are <strong>invite-only</strong> - you need the code to join</li>
+      <li>Codes are <strong>not shown publicly</strong> in the session list</li>
+      <li>Only share codes with people you want to play with</li>
+    </ul>
+
+    <h3>⚠️ FAIR PLAY RULES</h3>
+    <ul>
+      <li>Before the first mark: You can shuffle your board or reset marks</li>
+      <li>After first mark: <strong>Game is locked</strong> - play to win or leave!</li>
+      <li>No cheating allowed - everyone plays by the same rules</li>
+    </ul>
+
+    <h3>💡 PRO TIPS</h3>
+    <ul>
+      <li>🎨 Try different cities/themes for variety</li>
+      <li>👥 More players = more fun competition!</li>
+      <li>📱 Works great on phones, tablets, and computers</li>
+      <li>🔄 You can rejoin anytime - your progress is saved</li>
+      <li>📸 Look carefully - some photos look similar!</li>
+    </ul>
+
+    <h3>🎲 READY TO PLAY?</h3>
+    <p style="text-align: center; font-weight: bold; color: #FFD700; font-size: 1.1rem;">
+      Create a new session or join an existing one to get started!
+    </p>
+
+    <button class="close-help-btn" onclick="closeHelp()">Got It! 🎉</button>
+  </div>
+</div>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -396,6 +574,23 @@ function joinSession(sessionName, cityName, actualSessionCode) {
     // ✅ Code is valid - allow joining
     window.location.href = `pingo-multiplayer.html?city=${cityName}&session=${actualSessionCode.toUpperCase()}&playerName=${encodeURIComponent(playerName.trim())}&mode=join`;
 }
+
+// Show help modal
+function showHelp() {
+    document.getElementById('helpModal').classList.add('active');
+}
+
+// Close help modal
+function closeHelp() {
+    document.getElementById('helpModal').classList.remove('active');
+}
+
+// Close help modal with ESC key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeHelp();
+    }
+});
 
 window.addEventListener('DOMContentLoaded', init);
 </script>
