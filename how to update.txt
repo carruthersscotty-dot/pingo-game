@@ -1,0 +1,10 @@
+cd C:\Projects\PINGO
+
+# Every time you make changes:
+git add .
+git commit -m "What did you change?"
+git push
+
+# That's it! 🎉
+
+ 

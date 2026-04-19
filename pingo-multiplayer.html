@@ -658,6 +658,43 @@
             return 'user_' + Math.random().toString(36).substring(2, 15);
         }
 
+        function saveSessionToStorage() {
+            localStorage.setItem('pingo_session', JSON.stringify({
+                sessionCode: sessionCode,
+                userId: userId,
+                playerName: playerName,
+                cityName: cityName,
+                sessionName: sessionName,
+                timestamp: Date.now()
+            }));
+            console.log('✅ Session saved to localStorage');
+        }
+
+        function loadSessionFromStorage() {
+            const saved = localStorage.getItem('pingo_session');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    // Session expires after 24 hours
+                    if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+                        return data;
+                    } else {
+                        console.log('⏰ Saved session expired');
+                        localStorage.removeItem('pingo_session');
+                    }
+                } catch (e) {
+                    console.error('Error loading saved session:', e);
+                    localStorage.removeItem('pingo_session');
+                }
+            }
+            return null;
+        }
+
+        function clearSessionStorage() {
+            localStorage.removeItem('pingo_session');
+            console.log('🗑️ Session cleared from localStorage');
+        }
+
         async function init() {
             console.log('=== PINGO Multiplayer Init ===');
 
@@ -695,6 +732,44 @@
             }
 
             const params = getURLParams();
+
+            // Check if we have a saved session and no URL params (returning from back button)
+            const savedSession = loadSessionFromStorage();
+            if (savedSession && !params.session) {
+                console.log('📱 Found saved session, attempting to rejoin...');
+
+                // Verify session still exists in Firebase
+                const sessionExists = await db.ref(`sessions/${savedSession.sessionCode}`).once('value');
+                if (sessionExists.exists()) {
+                    // Restore session data
+                    cityName = savedSession.cityName;
+                    sessionCode = savedSession.sessionCode;
+                    sessionName = savedSession.sessionName;
+                    playerName = savedSession.playerName;
+                    userId = savedSession.userId;
+
+                    console.log('✅ Rejoining saved session:', sessionCode);
+
+                    document.getElementById('sessionCode').textContent = sessionCode;
+                    document.getElementById('cityName').textContent = cityName.toUpperCase();
+
+                    // Rejoin session (mark as online again)
+                    await db.ref(`sessions/${sessionCode}/players/${userId}`).update({
+                        online: true,
+                        lastSeen: firebase.database.ServerValue.TIMESTAMP
+                    });
+
+                    await loadImages();
+                    listenToSession();
+                    addMessage(`Welcome back, ${playerName}!`, 'info');
+                    return; // Skip normal initialization
+                } else {
+                    console.log('❌ Saved session no longer exists');
+                    clearSessionStorage();
+                }
+            }
+
+            // Normal initialization from URL params
             cityName = params.city;
             sessionCode = params.session;
             sessionName = params.name || 'Game Session';
@@ -732,6 +807,7 @@
                         }
                     }
                 });
+                saveSessionToStorage(); // Save session to localStorage
                 addMessage(`Session "${sessionName}" created! Share code: ${sessionCode}`, 'info');
             } catch (error) {
                 console.error('Error creating session:', error);
@@ -767,6 +843,8 @@
 
                 console.log('Successfully joined session!');
                 addMessage(`${playerName} joined session: ${sessionName}`, 'info');
+
+                saveSessionToStorage(); // Save session to localStorage
 
             } catch (error) {
                 console.error('Error joining session:', error);
@@ -1096,7 +1174,9 @@
             sessionRef.child('markedImages').on('value', sessionListeners.markedListener);
 
             window.addEventListener('beforeunload', () => {
+                // Mark player as offline when closing browser/tab
                 db.ref(`sessions/${sessionCode}/players/${userId}/online`).set(false);
+                // Keep session saved for potential rejoin (don't clear localStorage here)
             });
         }
 
@@ -1127,6 +1207,9 @@
             if (sessionCode && userId) {
                 await db.ref(`sessions/${sessionCode}/players/${userId}`).remove();
             }
+
+            // Clear saved session from localStorage
+            clearSessionStorage();
 
             window.location.href = 'index.html';
         }

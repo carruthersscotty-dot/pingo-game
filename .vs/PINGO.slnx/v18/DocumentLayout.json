@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Projects\\PINGO\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\index.html||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.html||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\pingo-multiplayer.html||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:pingo-multiplayer.html||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\session-setup.html||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:session-setup.html||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\index.html||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:index.html||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\multiplayer\\index.html||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -29,10 +33,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\firebase-test.html||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:firebase-test.html||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\session-setup.html||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:session-setup.html||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Projects\\PINGO\\MULTIPLAYER-SETUP.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
@@ -82,48 +82,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "index.html",
-              "DocumentMoniker": "C:\\Projects\\PINGO\\multiplayer\\index.html",
-              "RelativeDocumentMoniker": "multiplayer\\index.html",
-              "ToolTip": "C:\\Projects\\PINGO\\multiplayer\\index.html",
-              "RelativeToolTip": "multiplayer\\index.html",
-              "ViewState": "AgIAAFoAAAAAAAAAAAAAAG0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-10T06:56:57.531Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "pingo-multiplayer.html",
-              "DocumentMoniker": "C:\\Projects\\PINGO\\pingo-multiplayer.html",
-              "RelativeDocumentMoniker": "pingo-multiplayer.html",
-              "ToolTip": "C:\\Projects\\PINGO\\pingo-multiplayer.html",
-              "RelativeToolTip": "pingo-multiplayer.html",
-              "ViewState": "AgIAAFQBAAAAAAAAAAAowA0DAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-10T08:04:08.477Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "FIREBASE-FIX.md",
-              "DocumentMoniker": "C:\\Projects\\PINGO\\FIREBASE-FIX.md",
-              "RelativeDocumentMoniker": "FIREBASE-FIX.md",
-              "ToolTip": "C:\\Projects\\PINGO\\FIREBASE-FIX.md",
-              "RelativeToolTip": "FIREBASE-FIX.md",
-              "ViewState": "AgIAABUAAAAAAAAAAAAAAA0BAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-04-10T08:16:18.807Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
               "Title": "index.html",
               "DocumentMoniker": "C:\\Projects\\PINGO\\index.html",
               "RelativeDocumentMoniker": "index.html",
@@ -136,7 +99,59 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "session-setup.html",
+              "DocumentMoniker": "C:\\Projects\\PINGO\\session-setup.html",
+              "RelativeDocumentMoniker": "session-setup.html",
+              "ToolTip": "C:\\Projects\\PINGO\\session-setup.html",
+              "RelativeToolTip": "session-setup.html",
+              "ViewState": "AgIAAKsAAAAAAAAAAAAYwLQAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-10T08:03:02.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "pingo-multiplayer.html",
+              "DocumentMoniker": "C:\\Projects\\PINGO\\pingo-multiplayer.html",
+              "RelativeDocumentMoniker": "pingo-multiplayer.html",
+              "ToolTip": "C:\\Projects\\PINGO\\pingo-multiplayer.html",
+              "RelativeToolTip": "pingo-multiplayer.html",
+              "ViewState": "AgIAAPkBAAAAAAAAAAAowL4DAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-10T08:04:08.477Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "FIREBASE-FIX.md",
+              "DocumentMoniker": "C:\\Projects\\PINGO\\FIREBASE-FIX.md",
+              "RelativeDocumentMoniker": "FIREBASE-FIX.md",
+              "ToolTip": "C:\\Projects\\PINGO\\FIREBASE-FIX.md",
+              "RelativeToolTip": "FIREBASE-FIX.md",
+              "ViewState": "AgIAABIAAAAAAAAAAIBJwA0BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-04-10T08:16:18.807Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "index.html",
+              "DocumentMoniker": "C:\\Projects\\PINGO\\multiplayer\\index.html",
+              "RelativeDocumentMoniker": "multiplayer\\index.html",
+              "ToolTip": "C:\\Projects\\PINGO\\multiplayer\\index.html",
+              "RelativeToolTip": "multiplayer\\index.html",
+              "ViewState": "AgIAAFgAAAAAAAAAAABBwG0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-04-10T06:56:57.531Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "firebase-config.js",
               "DocumentMoniker": "C:\\Projects\\PINGO\\firebase-config.js",
               "RelativeDocumentMoniker": "firebase-config.js",
@@ -144,23 +159,25 @@
               "RelativeToolTip": "firebase-config.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-04-10T06:54:37.105Z"
+              "WhenOpened": "2026-04-10T06:54:37.105Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "QUICK-FIX.md",
               "DocumentMoniker": "C:\\Projects\\PINGO\\QUICK-FIX.md",
               "RelativeDocumentMoniker": "QUICK-FIX.md",
               "ToolTip": "C:\\Projects\\PINGO\\QUICK-FIX.md",
               "RelativeToolTip": "QUICK-FIX.md",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAF8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAIBJwF8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-04-10T08:16:33.605Z"
+              "WhenOpened": "2026-04-10T08:16:33.605Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "firebase-test.html",
               "DocumentMoniker": "C:\\Projects\\PINGO\\firebase-test.html",
               "RelativeDocumentMoniker": "firebase-test.html",
@@ -168,7 +185,8 @@
               "RelativeToolTip": "firebase-test.html",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-10T08:15:04.754Z"
+              "WhenOpened": "2026-04-10T08:15:04.754Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -180,19 +198,8 @@
               "RelativeToolTip": "MULTIPLAYER-SETUP.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAOUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-04-10T08:04:53.56Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "session-setup.html",
-              "DocumentMoniker": "C:\\Projects\\PINGO\\session-setup.html",
-              "RelativeDocumentMoniker": "session-setup.html",
-              "ToolTip": "C:\\Projects\\PINGO\\session-setup.html",
-              "RelativeToolTip": "session-setup.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-10T08:03:02.412Z"
+              "WhenOpened": "2026-04-10T08:04:53.56Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -204,7 +211,8 @@
               "RelativeToolTip": "gesplitste.html",
               "ViewState": "AgIAAE0BAAAAAAAAAAAIwNYBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2026-04-10T07:54:05.676Z"
+              "WhenOpened": "2026-04-10T07:54:05.676Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -216,7 +224,8 @@
               "RelativeToolTip": "multiplayer\\firebase-config.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-04-10T06:56:57.249Z"
+              "WhenOpened": "2026-04-10T06:56:57.249Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -228,7 +237,8 @@
               "RelativeToolTip": "multiplayer\\app.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAALoBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-04-10T06:56:57.621Z"
+              "WhenOpened": "2026-04-10T06:56:57.621Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -238,9 +248,10 @@
               "RelativeDocumentMoniker": "multiplayer\\README.md",
               "ToolTip": "C:\\Projects\\PINGO\\multiplayer\\README.md",
               "RelativeToolTip": "multiplayer\\README.md",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAAAgAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAADAAAAAAAAAAAIBJwAgAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-04-10T06:56:57.373Z"
+              "WhenOpened": "2026-04-10T06:56:57.373Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -252,7 +263,8 @@
               "RelativeToolTip": "multiplayer\\styles.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMkBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-10T06:56:57.447Z"
+              "WhenOpened": "2026-04-10T06:56:57.447Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -262,9 +274,10 @@
               "RelativeDocumentMoniker": ".gitignore",
               "ToolTip": "C:\\Projects\\PINGO\\.gitignore",
               "RelativeToolTip": ".gitignore",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-04-10T06:54:37.659Z"
+              "WhenOpened": "2026-04-10T06:54:37.659Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -276,7 +289,8 @@
               "RelativeToolTip": "README.md",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAM4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2026-04-10T06:54:36.788Z"
+              "WhenOpened": "2026-04-10T06:54:36.788Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -288,7 +302,8 @@
               "RelativeToolTip": "app.js",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAALoBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-04-10T06:54:37.487Z"
+              "WhenOpened": "2026-04-10T06:54:37.487Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -300,7 +315,8 @@
               "RelativeToolTip": "styles.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMEBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-10T06:54:37.584Z"
+              "WhenOpened": "2026-04-10T06:54:37.584Z",
+              "EditorCaption": ""
             }
           ]
         }
