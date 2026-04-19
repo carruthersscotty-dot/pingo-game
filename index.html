@@ -279,6 +279,105 @@ h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
   transform: translateY(-2px);
 }
 
+/* Share Modal */
+.share-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-modal.active {
+  display: flex;
+}
+
+.share-content {
+  background: white;
+  color: #003087;
+  padding: 40px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  margin: 20px;
+  text-align: center;
+}
+
+.share-content h2 {
+  color: #4CAF50;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.share-content p {
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.share-textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #003087;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: 'Arial', sans-serif;
+  resize: none;
+  margin-bottom: 20px;
+  background: #f9f9f9;
+  color: #003087;
+  line-height: 1.6;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-copy {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-copy:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+}
+
+.btn-close-share {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 20px;
+  background: #FFD700;
+  color: #003087;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-close-share:hover {
+  background: #FFC700;
+  transform: translateY(-2px);
+}
+
 @media (max-width: 768px) {
   .sessions-grid {
     grid-template-columns: 1fr;
@@ -295,6 +394,14 @@ h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
   .help-content {
     padding: 25px;
     margin: 10px;
+  }
+
+  .share-content {
+    padding: 25px;
+  }
+
+  .share-textarea {
+    font-size: 0.9rem;
   }
 }
 </style>
@@ -389,6 +496,19 @@ h1 { font-size: 4.5rem; margin: 0; line-height: 1; }
     </p>
 
     <button class="close-help-btn" onclick="closeHelp()">Got It! 🎉</button>
+  </div>
+</div>
+
+<!-- Share Session Modal -->
+<div id="shareModal" class="share-modal">
+  <div class="share-content">
+    <h2>✅ Session Created!</h2>
+    <p><strong>Copy this message and send to your friends:</strong></p>
+    <textarea id="shareTextarea" class="share-textarea" rows="8" readonly></textarea>
+    <div class="share-buttons">
+      <button class="btn-copy" onclick="copyShareText()">📋 Copy Message</button>
+      <button class="btn-close-share" onclick="closeShareModal()">Continue to Game</button>
+    </div>
   </div>
 </div>
 
@@ -553,16 +673,20 @@ function createNewSession() {
     // Create shareable message
     const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\nCode: ${sessionCode}\n\nGo to: ${window.location.origin}${window.location.pathname}`;
 
-    // Copy to clipboard
-    navigator.clipboard.writeText(shareMessage).then(() => {
-        alert(`✅ Session created!\n\nSession Code: ${sessionCode}\n\n📋 Session details copied to clipboard!\nPaste and send to your friends to invite them.`);
-    }).catch(() => {
-        // Fallback if clipboard fails
-        alert(`Session created!\n\nSession Code: ${sessionCode}\nCity: ${selectedCity}\n\nShare this code with friends to invite them.`);
-    });
+    // Store session data for modal
+    window.pendingSession = {
+        city: selectedCity,
+        code: sessionCode,
+        name: sessionName,
+        playerName: playerName
+    };
 
-    // Redirect to game
-    window.location.href = `pingo-multiplayer.html?city=${selectedCity}&session=${sessionCode}&name=${encodeURIComponent(sessionName.trim())}&playerName=${encodeURIComponent(playerName.trim())}&mode=create`;
+    // Show share modal with the message
+    document.getElementById('shareTextarea').value = shareMessage;
+    document.getElementById('shareModal').classList.add('active');
+
+    // Auto-select text for easy copying
+    document.getElementById('shareTextarea').select();
 }
 
 // Join existing session - REQUIRES VALID SESSION CODE
@@ -593,10 +717,52 @@ function closeHelp() {
     document.getElementById('helpModal').classList.remove('active');
 }
 
+// Copy share text to clipboard
+function copyShareText() {
+    const textarea = document.getElementById('shareTextarea');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // For mobile devices
+
+    // Try modern clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            alert('📋 Copied to clipboard!\nPaste and send to your friends.');
+        }).catch(() => {
+            // Fallback to document.execCommand
+            try {
+                document.execCommand('copy');
+                alert('📋 Copied to clipboard!\nPaste and send to your friends.');
+            } catch (err) {
+                alert('Text selected! Press Ctrl+C (or Cmd+C on Mac) to copy.');
+            }
+        });
+    } else {
+        // Old method for older browsers
+        try {
+            document.execCommand('copy');
+            alert('📋 Copied to clipboard!\nPaste and send to your friends.');
+        } catch (err) {
+            alert('Text selected! Press Ctrl+C (or Cmd+C on Mac) to copy.');
+        }
+    }
+}
+
+// Close share modal and go to game
+function closeShareModal() {
+    const session = window.pendingSession;
+    if (!session) return;
+
+    document.getElementById('shareModal').classList.remove('active');
+
+    // Redirect to game
+    window.location.href = `pingo-multiplayer.html?city=${session.city}&session=${session.code}&name=${encodeURIComponent(session.name)}&playerName=${encodeURIComponent(session.playerName)}&mode=create`;
+}
+
 // Close help modal with ESC key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeHelp();
+        // Don't close share modal with ESC - user needs to copy first
     }
 });
 
