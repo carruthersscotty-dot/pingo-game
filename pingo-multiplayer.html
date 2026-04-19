@@ -818,6 +818,7 @@
         async function joinSessionInFirebase() {
             try {
                 console.log('Attempting to join session:', sessionCode);
+                console.log('Player info:', { userId, playerName });
 
                 const snapshot = await db.ref(`sessions/${sessionCode}`).once('value');
 
@@ -834,6 +835,7 @@
                 sessionName = session.name;
 
                 console.log('Joining session:', sessionName);
+                console.log('Existing players:', session.players);
 
                 await db.ref(`sessions/${sessionCode}/players/${userId}`).set({
                     name: playerName,
@@ -841,7 +843,12 @@
                     joinedAt: firebase.database.ServerValue.TIMESTAMP
                 });
 
-                console.log('Successfully joined session!');
+                console.log('✅ Successfully joined session as:', userId);
+
+                // Verify the player was added
+                const verifySnapshot = await db.ref(`sessions/${sessionCode}/players`).once('value');
+                console.log('📊 All players after join:', verifySnapshot.val());
+
                 addMessage(`${playerName} joined session: ${sessionName}`, 'info');
 
                 saveSessionToStorage(); // Save session to localStorage
@@ -936,10 +943,28 @@
             addMessage('All marks reset! Ready to start fresh.', 'info');
         }
 
+        // Seeded random number generator
+        function seededRandom(seed) {
+            let value = seed;
+            return function() {
+                value = (value * 9301 + 49297) % 233280;
+                return value / 233280;
+            };
+        }
+
+        // Shuffle array using session + user as seed (each player gets unique but consistent board)
         function shuffleArray(array) {
             const arr = [...array];
+
+            // Create seeded random generator from session code + user ID
+            // This ensures: same player = same board, different players = different boards
+            const seedString = sessionCode + userId;
+            const seed = seedString.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const random = seededRandom(seed);
+
+            // Fisher-Yates shuffle with seeded random
             for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
+                const j = Math.floor(random() * (i + 1));
                 [arr[i], arr[j]] = [arr[j], arr[i]];
             }
             return arr;
@@ -1120,8 +1145,14 @@
 
             sessionListeners.playersListener = (snapshot) => {
                 const players = snapshot.val() || {};
+                console.log('📊 All players in session:', players); // DEBUG
+
                 const onlinePlayers = Object.values(players).filter(p => p.online);
+                const offlinePlayers = Object.values(players).filter(p => !p.online);
                 const onlineCount = onlinePlayers.length;
+
+                console.log('✅ Online players:', onlinePlayers); // DEBUG
+                console.log('❌ Offline players:', offlinePlayers); // DEBUG
 
                 // Display player names
                 const playerNames = onlinePlayers.map(p => p.name || 'Anonymous').join(', ');
