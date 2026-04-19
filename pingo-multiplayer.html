@@ -732,10 +732,36 @@
             }
 
             const params = getURLParams();
-
-            // Check if we have a saved session and no URL params (returning from back button)
             const savedSession = loadSessionFromStorage();
-            if (savedSession && !params.session) {
+
+            // PRIORITY 1: If refreshing the same session (URL has session code matching saved session)
+            if (savedSession && params.session && savedSession.sessionCode === params.session) {
+                console.log('🔄 Page refresh detected - restoring saved userId to maintain board layout');
+
+                // Use saved userId to ensure consistent board shuffle
+                userId = savedSession.userId;
+                playerName = savedSession.playerName;
+                cityName = params.city || savedSession.cityName;
+                sessionCode = params.session;
+                sessionName = savedSession.sessionName;
+
+                document.getElementById('sessionCode').textContent = sessionCode;
+                document.getElementById('cityName').textContent = cityName.toUpperCase();
+
+                // Update presence in Firebase
+                await db.ref(`sessions/${sessionCode}/players/${userId}`).update({
+                    online: true,
+                    lastSeen: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                await loadImages();
+                listenToSession();
+                addMessage(`Welcome back, ${playerName}!`, 'info');
+                return;
+            }
+
+            // PRIORITY 2: Back button navigation (no URL params but have saved session)
+            else if (savedSession && !params.session) {
                 console.log('📱 Found saved session, attempting to rejoin...');
 
                 // Verify session still exists in Firebase
@@ -769,12 +795,12 @@
                 }
             }
 
-            // Normal initialization from URL params
+            // PRIORITY 3: Normal initialization from URL params (first time joining)
             cityName = params.city;
             sessionCode = params.session;
             sessionName = params.name || 'Game Session';
             playerName = params.playerName || 'Anonymous';
-            userId = generateUserId();
+            userId = generateUserId(); // Only generate NEW userId if truly new session
 
             console.log('Session params:', { cityName, sessionCode, sessionName, playerName, userId });
 
