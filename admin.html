@@ -207,6 +207,31 @@
             padding: 15px;
             text-align: left;
             font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        th:hover {
+            background: #00256b;
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.3;
+            font-size: 0.8em;
+        }
+
+        th.sort-asc::after {
+            content: ' ▲';
+            opacity: 1;
+            color: #FFD700;
+        }
+
+        th.sort-desc::after {
+            content: ' ▼';
+            opacity: 1;
+            color: #FFD700;
         }
 
         td {
@@ -350,12 +375,12 @@
                 <table id="sessionsTable" style="display: none;">
                     <thead>
                         <tr>
-                            <th>Session Code</th>
-                            <th>Name</th>
-                            <th>City</th>
-                            <th>Players</th>
-                            <th>Status</th>
-                            <th>Created</th>
+                            <th class="sortable" onclick="sortTable('code')">Session Code</th>
+                            <th class="sortable" onclick="sortTable('name')">Name</th>
+                            <th class="sortable" onclick="sortTable('city')">City</th>
+                            <th class="sortable" onclick="sortTable('players')">Players</th>
+                            <th class="sortable" onclick="sortTable('status')">Status</th>
+                            <th class="sortable" onclick="sortTable('created')" data-sort="desc">Created</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -376,6 +401,8 @@
     <script>
         let db;
         const ADMIN_PASSWORD = 'pingo2024'; // CHANGE THIS TO YOUR SECURE PASSWORD
+        let sessionsData = []; // Store sessions data for sorting
+        let currentSort = { column: 'created', direction: 'desc' }; // Default sort by created date
 
         function handleKeyPress(event) {
             if (event.key === 'Enter') {
@@ -442,6 +469,9 @@
                 let endedSessions = 0;
                 let totalPlayers = 0;
 
+                // Build sessions data array
+                sessionsData = [];
+
                 Object.keys(sessions).forEach(code => {
                     const session = sessions[code];
                     totalSessions++;
@@ -472,23 +502,22 @@
                         statusClass = 'badge-inactive';
                     }
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${code}</strong></td>
-                        <td>${session.name}</td>
-                        <td>${session.city}</td>
-                        <td>${onlinePlayers}/${totalSessionPlayers}</td>
-                        <td><span class="badge ${statusClass}">${status}</span></td>
-                        <td>${createdDate.toLocaleDateString()} ${createdDate.toLocaleTimeString()}<br>
-                            <small style="opacity: 0.7;">(${ageHours}h ago)</small>
-                        </td>
-                        <td>
-                            <button class="delete-btn" onclick="deleteSession('${code}', '${session.name}')">🗑️ Delete</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+                    sessionsData.push({
+                        code,
+                        name: session.name,
+                        city: session.city,
+                        onlinePlayers,
+                        totalSessionPlayers,
+                        status,
+                        statusClass,
+                        createdAt: session.createdAt,
+                        createdDate,
+                        ageHours
+                    });
                 });
 
+                // Sort and render
+                sortAndRenderTable();
                 updateStats(totalSessions, activeSessions, endedSessions, totalPlayers);
 
             } catch (error) {
@@ -609,6 +638,100 @@
                 console.error('Error deleting all sessions:', error);
                 alert('Failed to delete sessions: ' + error.message);
             }
+        }
+
+        function sortTable(column) {
+            // Toggle direction if clicking same column
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+
+            sortAndRenderTable();
+        }
+
+        function sortAndRenderTable() {
+            const tbody = document.getElementById('sessionsBody');
+            tbody.innerHTML = '';
+
+            // Sort the data
+            const sortedData = [...sessionsData].sort((a, b) => {
+                let compareA, compareB;
+
+                switch (currentSort.column) {
+                    case 'code':
+                        compareA = a.code.toLowerCase();
+                        compareB = b.code.toLowerCase();
+                        break;
+                    case 'name':
+                        compareA = a.name.toLowerCase();
+                        compareB = b.name.toLowerCase();
+                        break;
+                    case 'city':
+                        compareA = a.city.toLowerCase();
+                        compareB = b.city.toLowerCase();
+                        break;
+                    case 'players':
+                        compareA = a.onlinePlayers;
+                        compareB = b.onlinePlayers;
+                        break;
+                    case 'status':
+                        // Sort order: Active > Inactive > Ended
+                        const statusOrder = { 'Active': 1, 'Inactive': 2, 'Ended': 3 };
+                        compareA = statusOrder[a.status];
+                        compareB = statusOrder[b.status];
+                        break;
+                    case 'created':
+                        compareA = a.createdAt;
+                        compareB = b.createdAt;
+                        break;
+                    default:
+                        return 0;
+                }
+
+                if (compareA < compareB) {
+                    return currentSort.direction === 'asc' ? -1 : 1;
+                }
+                if (compareA > compareB) {
+                    return currentSort.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+
+            // Update table headers to show sort indicator
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+
+            const sortedHeader = Array.from(document.querySelectorAll('th.sortable')).find(th => {
+                const onclick = th.getAttribute('onclick');
+                return onclick && onclick.includes(`'${currentSort.column}'`);
+            });
+
+            if (sortedHeader) {
+                sortedHeader.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+
+            // Render sorted data
+            sortedData.forEach(session => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${session.code}</strong></td>
+                    <td>${session.name}</td>
+                    <td>${session.city}</td>
+                    <td>${session.onlinePlayers}/${session.totalSessionPlayers}</td>
+                    <td><span class="badge ${session.statusClass}">${session.status}</span></td>
+                    <td>${session.createdDate.toLocaleDateString()} ${session.createdDate.toLocaleTimeString()}<br>
+                        <small style="opacity: 0.7;">(${session.ageHours}h ago)</small>
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteSession('${session.code}', '${session.name}')">🗑️ Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
         async function refreshSessions() {

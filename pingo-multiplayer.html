@@ -818,7 +818,20 @@
             cityName = params.city;
             sessionCode = params.session;
             sessionName = params.name || 'Game Session';
-            playerName = params.playerName || 'Anonymous';
+
+            // If joining and no playerName provided, prompt for it
+            if (params.mode === 'join' && !params.playerName) {
+                playerName = prompt('Enter your name to join the game:');
+                if (!playerName || !playerName.trim()) {
+                    alert('Name is required to join!');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                playerName = playerName.trim();
+            } else {
+                playerName = params.playerName || 'Anonymous';
+            }
+
             userId = generateUserId(); // Only generate NEW userId if truly new session
 
             console.log('Session params:', { cityName, sessionCode, sessionName, playerName, userId });

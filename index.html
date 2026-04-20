@@ -670,8 +670,12 @@ function createNewSession() {
     // Generate session code
     const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
+    // Create direct join link with all parameters
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const joinLink = `${baseUrl}pingo-multiplayer.html?city=${encodeURIComponent(selectedCity)}&session=${sessionCode}&name=${encodeURIComponent(sessionName)}&mode=join`;
+
     // Create shareable message
-    const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\nCode: ${sessionCode}\n\nGo to: ${window.location.origin}${window.location.pathname}`;
+    const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\n\n👉 Click here to join:\n${joinLink}\n\n(You'll just need to enter your name!)`;
 
     // Store session data for modal
     window.pendingSession = {
