@@ -696,10 +696,10 @@ async function createNewSession() {
 
     // Create direct join link with all parameters
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-    const joinLink = `${baseUrl}pingo-multiplayer.html?city=${encodeURIComponent(selectedCity)}&session=${sessionCode}&name=${encodeURIComponent(sessionName)}&mode=join`;
+    const joinLink = `${baseUrl}pingo-multiplayer.html?city=${encodeURIComponent(selectedCity)}&session=${sessionCode}`;
 
     // Create shareable message
-    const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\n\n👉 Click here to join:\n${joinLink}\n\n(You'll just need to enter your name!)`;
+    const shareMessage = `🎉 Join my PINGO game!\n\nSession: ${sessionName}\nCity/Theme: ${selectedCity}\n\n👉 Click here to join:\n${joinLink}\n\n(You'll be asked for your name when you join!)`;
 
     // Store session data for modal
     window.pendingSession = {
@@ -783,9 +783,8 @@ function closeShareModal() {
 
     document.getElementById('shareModal').classList.remove('active');
 
-    // Redirect to game in JOIN mode (session already created in Firebase)
-    // The userId and playerName will be used to update the existing player record
-    window.location.href = `pingo-multiplayer.html?city=${session.city}&session=${session.code}&name=${encodeURIComponent(session.name)}&playerName=${encodeURIComponent(session.playerName)}&userId=${session.userId}&mode=join`;
+    // Creator joins with their existing userId and playerName
+    window.location.href = `pingo-multiplayer.html?city=${session.city}&session=${session.code}&playerName=${encodeURIComponent(session.playerName)}&userId=${session.userId}`;
 }
 
 // Close help modal with ESC key

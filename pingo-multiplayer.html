@@ -667,10 +667,8 @@
             return {
                 city: params.get('city') || 'Schiphol',
                 session: params.get('session'),
-                name: params.get('name'),
-                playerName: params.get('playerName') || 'Anonymous',
-                userId: params.get('userId'), // For session creator
-                mode: params.get('mode')
+                playerName: params.get('playerName'), // Only provided for creator
+                userId: params.get('userId') // Only provided for creator
             };
         }
 
@@ -818,10 +816,9 @@
             // PRIORITY 3: Normal initialization from URL params (first time joining)
             cityName = params.city;
             sessionCode = params.session;
-            sessionName = params.name || 'Game Session';
 
-            // If joining and no playerName provided, prompt for it
-            if (params.mode === 'join' && !params.playerName) {
+            // If no playerName in URL, prompt for it (this is a new joiner)
+            if (!params.playerName) {
                 playerName = prompt('Enter your name to join the game:');
                 if (!playerName || !playerName.trim()) {
                     alert('Name is required to join!');
@@ -829,20 +826,31 @@
                     return;
                 }
                 playerName = playerName.trim();
+                userId = generateUserId(); // Generate new userId for new player
             } else {
-                playerName = params.playerName || 'Anonymous';
+                // Creator joining with their existing userId and playerName
+                playerName = params.playerName;
+                userId = params.userId || generateUserId();
             }
 
-            // Use provided userId if available (session creator), otherwise generate new one
-            userId = params.userId || generateUserId();
+            console.log('Session params:', { cityName, sessionCode, playerName, userId });
 
-            console.log('Session params:', { cityName, sessionCode, sessionName, playerName, userId });
+            // Fetch session info from Firebase
+            const sessionSnapshot = await db.ref(`sessions/${sessionCode}`).once('value');
+            if (!sessionSnapshot.exists()) {
+                alert('Session not found! Please check the code: ' + sessionCode);
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const sessionData = sessionSnapshot.val();
+            sessionName = sessionData.name;
 
             document.getElementById('sessionCode').textContent = sessionCode;
             document.getElementById('cityName').textContent = cityName.toUpperCase();
 
-            // Always use join mode since session is pre-created
-            console.log('Mode: JOIN');
+            // Join the session
+            console.log('Joining session:', sessionName);
             await joinSessionInFirebase();
 
             await loadImages();
