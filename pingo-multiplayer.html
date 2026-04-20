@@ -669,6 +669,7 @@
                 session: params.get('session'),
                 name: params.get('name'),
                 playerName: params.get('playerName') || 'Anonymous',
+                userId: params.get('userId'), // For session creator
                 mode: params.get('mode')
             };
         }
@@ -832,45 +833,20 @@
                 playerName = params.playerName || 'Anonymous';
             }
 
-            userId = generateUserId(); // Only generate NEW userId if truly new session
+            // Use provided userId if available (session creator), otherwise generate new one
+            userId = params.userId || generateUserId();
 
             console.log('Session params:', { cityName, sessionCode, sessionName, playerName, userId });
 
             document.getElementById('sessionCode').textContent = sessionCode;
             document.getElementById('cityName').textContent = cityName.toUpperCase();
 
-            if (params.mode === 'create') {
-                console.log('Mode: CREATE');
-                await createSessionInFirebase();
-            } else {
-                console.log('Mode: JOIN');
-                await joinSessionInFirebase();
-            }
+            // Always use join mode since session is pre-created
+            console.log('Mode: JOIN');
+            await joinSessionInFirebase();
 
             await loadImages();
             listenToSession();
-        }
-
-        async function createSessionInFirebase() {
-            try {
-                await db.ref(`sessions/${sessionCode}`).set({
-                    name: sessionName,
-                    city: cityName,
-                    createdAt: firebase.database.ServerValue.TIMESTAMP,
-                    players: {
-                        [userId]: {
-                            name: playerName,
-                            online: true,
-                            joinedAt: firebase.database.ServerValue.TIMESTAMP
-                        }
-                    }
-                });
-                saveSessionToStorage(); // Save session to localStorage
-                addMessage(`Session "${sessionName}" created! Share code: ${sessionCode}`, 'info');
-            } catch (error) {
-                console.error('Error creating session:', error);
-                alert('Failed to create session');
-            }
         }
 
         async function joinSessionInFirebase() {
@@ -895,10 +871,11 @@
                 console.log('Joining session:', sessionName);
                 console.log('Existing players:', session.players);
 
-                await db.ref(`sessions/${sessionCode}/players/${userId}`).set({
+                // Update or create player record (set online to true)
+                await db.ref(`sessions/${sessionCode}/players/${userId}`).update({
                     name: playerName,
                     online: true,
-                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    lastSeen: firebase.database.ServerValue.TIMESTAMP
                 });
 
                 console.log('✅ Successfully joined session as:', userId);
